@@ -51,12 +51,12 @@ namespace TuanBuy.Controllers
         #endregion
 
         #region 取得商品頁留言
-        public ProductMessage GetProductMessage(int id)
-        {
-            ProductManage product = new ProductManage(_sqldb);
-            var result = product.GetDemoProductData(id);
-            return result;
-        }
+        //public ProductMessage GetProductMessage(int id)
+        //{
+        //    ProductManage product = new ProductManage(_sqldb);
+        //    var result = product.GetDemoProductData(id);
+        //    return result;
+        //}
         #endregion
         //等待開團商品頁
         [Authorize(Roles = "FullUser")]
