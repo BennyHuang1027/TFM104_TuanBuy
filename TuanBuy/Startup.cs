@@ -50,8 +50,8 @@ namespace TuanBuy
             //EF CORE Contextª`¤J
             services.AddDbContext<TuanBuyContext>(option =>
                 option.UseSqlServer(Configuration.GetConnectionString("TuanBuy")));
-            services.AddDbContext<Models.SqlDbServices>((builider) => 
-                { builider.UseSqlServer(this.Configuration.GetConnectionString("TuanBuy")); });
+            //services.AddDbContext<Models.SqlDbServices>((builider) => 
+            //    { builider.UseSqlServer(this.Configuration.GetConnectionString("TuanBuy")); });
             //­ÜÀx¼Ò¦¡ª`¤J
             services.AddTransient<GenericRepository<Product>>();
             services.AddTransient<GenericRepository<User>>();

@@ -24,4 +24,9 @@
     <None Include="wwwroot\VueComponent\VueDemo.js" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\MemberPicture\" />
+    <Folder Include="wwwroot\MessagePicture\" />
+  </ItemGroup>
+
 </Project>

@@ -9,8 +9,8 @@ namespace TuanBuy.Models
 {
     public class UserDb
     {
-        private Models.SqlDbServices _dbContext;
-        public UserDb(Models.SqlDbServices dbContext)
+        private TuanBuyContext _dbContext;
+        public UserDb(TuanBuyContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -27,7 +27,7 @@ namespace TuanBuy.Models
                          .Except(_dbContext.Member_Chats.Where(x => x.MemberId == MemberId)
                          .Select(x => new { x.MemberId, x.ChatRoomId }));
             var result = (from chat in _dbContext.Member_Chats
-                          join user in _dbContext.Members on chat.MemberId equals user.Id
+                          join user in _dbContext.User on chat.MemberId equals user.Id
                           join chatroom in _dbContext.ChatRooms on chat.ChatRoomId equals chatroom.ChatRoomId
                           where ((getChatuser.Select(x => x.ChatRoomId).Contains(chat.ChatRoomId)
                           && (getChatuser.Select(u => u.MemberId).Contains(user.Id))))
@@ -113,7 +113,7 @@ namespace TuanBuy.Models
             //                  user
             //              });
             var result = from chat in _dbContext.Member_Chats
-                         join user in _dbContext.Members on chat.MemberId equals user.Id
+                         join user in _dbContext.User on chat.MemberId equals user.Id
                          where ((getChatuser.Select(x => x.ChatRoomId).Contains(chat.ChatRoomId)
                          && (getChatuser.Select(u => u.MemberId).Contains(user.Id))))
                          select new { user, chat.ChatRoomId };
@@ -146,7 +146,7 @@ namespace TuanBuy.Models
             //             where (getMessage).Contains(user.Id)
             //             select new { user,usermessage};
             var result = (from usermessage in _dbContext.ChatMessages
-                          join user in _dbContext.Members on usermessage.MemberId equals user.Id
+                          join user in _dbContext.User on usermessage.MemberId equals user.Id
                           where (getMessage).Contains(user.Id)
                           select new { user, usermessage });
 
@@ -164,10 +164,12 @@ namespace TuanBuy.Models
                 if (item.usermessage.MemberId == Id)
                 {
                     chatMessage.MyMessage = item.usermessage.Message;
+                    chatMessage.MyMessageImage = item.usermessage.MessageImage;
                 }
                 else
                 {
                     chatMessage.FriendMessage = item.usermessage.Message;
+                    chatMessage.FriendMessageImage = item.usermessage.MessageImage;
                 }
                 chatMessage.PicPath = item.user.PicPath;
                 chatMessage.MemberId = item.usermessage.MemberId.ToString();

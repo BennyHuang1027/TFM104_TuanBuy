@@ -72,8 +72,15 @@
                         }
 
                         axios.post("/api/User", self.user).then((resp) => {
-                            alert("註冊成功即將跳轉首頁");
-                            window.location.href = "/home/login";
+                            Swal.fire(
+                                'Good job!',
+                                '註冊成功！請至信箱收信驗證',
+                                'success'
+                            ).then((result) => {
+                                if (result.isConfirmed) {
+                                    document.location.href = "/home/login";
+                                }
+                            });
                         });
 
                     }

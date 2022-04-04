@@ -66,7 +66,7 @@ namespace TuanBuy.Service
             if (user == null || user.Email == null || loginUser.Email == "" || loginUser.Password == "")
                 return "帳號密碼錯誤";
 
-            if (user.State == 0) return "帳號未啟用";
+            if (user.State == "未驗證") return "帳號未啟用";
 
             var claims = new List<Claim>
             {
@@ -76,7 +76,7 @@ namespace TuanBuy.Service
                 new("NickName", user.NickName),
                 new("Email", user.Email),
                 new("UserName", user.Name),
-                new Claim("PicPath",user.PicPath),
+                new("PicPath",user.PicPath),
             };
             //將使用者資訊存入session
             var jsonstring = JsonConvert.SerializeObject(new
@@ -87,8 +87,8 @@ namespace TuanBuy.Service
                 user.PicPath
             });
             HttpContext.Session.SetString("userData", jsonstring);
-            if (user.State >= 1) claims.Add(new Claim(ClaimTypes.Role, "User"));
-            if (user.State == 2) claims.Add(new Claim(ClaimTypes.Role, "FullUser"));
+            if (user.State == "普通會員") claims.Add(new Claim(ClaimTypes.Role, "User"));
+            if (user.State == "正式會員") claims.Add(new Claim(ClaimTypes.Role, "FullUser"));
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);

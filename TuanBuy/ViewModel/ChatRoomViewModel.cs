@@ -43,7 +43,9 @@ namespace TuanBuy.ViewModel
 
         public string MyMessage { get; set; }
 
+        public string MyMessageImage { get; set; }
         public string FriendMessage { get; set; }
+        public string FriendMessageImage { get; set; }
         public DateTime CreateDate { get; set; }
     }
 }

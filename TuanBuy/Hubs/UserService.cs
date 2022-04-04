@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TuanBuy.Models;
 using TuanBuy.Models.AppUtlity;
+using TuanBuy.Models.Entities;
 
 namespace Topic.Hubs
 {
@@ -36,15 +37,16 @@ namespace Topic.Hubs
         public override int GetHashCode() => (Name, Id).GetHashCode();
         #endregion
     }
+
     public class UserService : DbContext
     {
-        private List<UserData> _userDatas;
+        public static List<UserData> _userDatas = new List<UserData>();
         //手動建立連線
         private IConfiguration _config;
         public UserService()
         {
             _config = AppUtility.getConfiguration("appsettings.json");
-            _userDatas = new List<UserData>();
+            //_userDatas = new List<UserData>();
         }
         //建立使用者資料泛型集合 新增使用者名單
         public List<UserData> addList(UserData userData)
@@ -75,10 +77,10 @@ namespace Topic.Hubs
         public List<UserData> GetOnlineUser(int MemeberID)
         {
             //手動建立DbContextOptions
-            var contextOptions = new DbContextOptionsBuilder<SqlDbServices>()
+            var contextOptions = new DbContextOptionsBuilder<TuanBuyContext>()
             .UseSqlServer(_config.GetConnectionString("TuanBuy"))
             .Options;
-            SqlDbServices sqlservices = new SqlDbServices(contextOptions);
+            TuanBuyContext sqlservices = new TuanBuyContext(contextOptions);
             //在線清單抓取及使用者好友抓取進行比對
             UserDb db = new UserDb(sqlservices);
             var UserFriend = db.GetChatUser(MemeberID);
@@ -103,10 +105,10 @@ namespace Topic.Hubs
         public UserData GetOnlineUserChat(string username, int MemeberId, string userAccount)
         {
             //手動建立DbContextOptions
-            var contextOptions = new DbContextOptionsBuilder<SqlDbServices>()
+            var contextOptions = new DbContextOptionsBuilder<TuanBuyContext>()
             .UseSqlServer(_config.GetConnectionString("TuanBuy"))
             .Options;
-            SqlDbServices sqlservices = new SqlDbServices(contextOptions);
+            TuanBuyContext sqlservices = new TuanBuyContext(contextOptions);
             //在線清單抓取及使用者好友抓取進行比對
             var result = sqlservices.Member_Chats.Where(x => x.MemberId == MemeberId).Select(x => new { x.ChatRoomId});
             UserData _user = new UserData();
@@ -128,10 +130,10 @@ namespace Topic.Hubs
         public void CreateMessage(Guid ChatRoomId,int MemberId,string Message)
         {
             //手動建立DbContextOptions
-            var contextOptions = new DbContextOptionsBuilder<SqlDbServices>()
+            var contextOptions = new DbContextOptionsBuilder<TuanBuyContext>()
             .UseSqlServer(_config.GetConnectionString("TuanBuy"))
             .Options;
-            SqlDbServices sqlservices = new SqlDbServices(contextOptions);
+            TuanBuyContext sqlservices = new TuanBuyContext(contextOptions);
             using(sqlservices)
             {
                 ChatMessages messages = new ChatMessages()

@@ -47,7 +47,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <label for="product-endtime" class="col-form-label">結束時間:</label>
-                                                <input type="date" class="form-control" id="product-endtime" v-model="product.endTime">
+                                                <input type="date" class="form-control" id="product-endtime" v-model="productDate">
                                             </div>
                                         </form>
                                     </div>
@@ -107,45 +107,45 @@
     var app = new Vue({
         el: "#mypd",
         data: {
-            products : {},
+            products: {},
             product: {
-                id:'',
-                price:'',
-                content:'',
-                description:'',
-                endTime:''
+                id: '',
+                price: '',
+                content: '',
+                description: '',
+                endTime: ''
             },
-            target:null
+            target: null
         },
         methods: {
             //更新商品資料
-            updateProduct:function(e) {
+            updateProduct: function(e) {
                 let self = this;
                 let productId = e.target.value;
                 //console.log(self.product);
-                console.log("id:"+productId);
-                let target = self.products.find((i) => {return +i.id === +productId});
+                console.log("id:" + productId);
+                let target = self.products.find((i) => { return +i.id === +productId });
                 self.product = target;
                 console.log(target);
             },
             //按下按鈕更新資料
-            readyUpdate:function() {
+            readyUpdate: function() {
                 let self = this;
                 //發送PUT請求到API修改資料
                 axios.put("/api/Products/", self.product)
-                     .then((resp) => alert("更新成功"))
+                    .then((resp) => alert("更新成功"))
                     .catch((res) => console.log(res));
                 window.location.reload();
 
             },
             //取得商品的ID
-            getProductId:function(e) {
+            getProductId: function(e) {
                 let self = this;
                 self.target = e.target.value;
                 alert(productId);
             },
             //刪除產品
-            deleteProduct:function() {
+            deleteProduct: function() {
                 let self = this;
                 axios.delete("/api/Products/" + self.target)
                     .then((res) => {
@@ -153,6 +153,18 @@
                     })
                     .catch((res) => console.log(res));
                 window.location.reload();
+            }
+        },
+        computed: {
+            productDate: {
+                get() {
+                    let self = this;
+                    return moment(self.product.endTime).format('YYYY-MM-DD');
+                },
+                set(value) {
+                    return this.product.endTime = moment(value).format('YYYY-MM-DD');
+                }
+                
             }
         },
         //Vue 實體與掛載完成時執行

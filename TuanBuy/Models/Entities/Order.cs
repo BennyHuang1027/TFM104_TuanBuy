@@ -14,6 +14,7 @@ namespace TuanBuy.Models.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int Id { get; set; }
+        [ForeignKey("Product")]
         public int ProductId { get; set; }
         public int State { get; set; }
         public DateTime CreateDate { get; set; }

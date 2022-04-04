@@ -5,10 +5,12 @@ using Org.BouncyCastle.Math.EC.Rfc7748;
 using TuanBuy.Models;
 using TuanBuy.Models.Entities;
 using TuanBuy.Models.Interface;
+using TuanBuy.ViewModel;
 
 namespace TuanBuy.Controllers
 {
-    [Authorize(Roles = "User")]
+    //[Authorize(Roles = "User")]
+    //[Authorize(Roles = "FullUser")]
     public class MemberCenterController : Controller
     {
         private readonly IRepository<User> _userRepository;
@@ -42,7 +44,7 @@ namespace TuanBuy.Controllers
             }
             else
             {
-                targetUser.State = 1;
+                targetUser.State = UserState.普通會員.ToString();
                 _userRepository.SaveChanges();
             }
 

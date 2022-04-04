@@ -20,7 +20,6 @@ namespace TuanBuy.Controllers
             return View();
         }
 
-        // GET: BackstageMangeController/Details/5
         public List<UserBackMange> GetUsers()
         {
             var ableUsers = _dbcontext.User.Where(x => x.Disable == false);
@@ -30,7 +29,8 @@ namespace TuanBuy.Controllers
                 Name = u.Name,
                 Email = u.Email,
                 State = u.State,
-                Birth = u.Birth
+                Birth = u.Birth,
+                Phone = u.Phone
             }).ToList();
         }
 
@@ -44,6 +44,7 @@ namespace TuanBuy.Controllers
             targetUser.Name = user.Name;
             targetUser.Birth = user.Birth;
             targetUser.State = user.State;
+            targetUser.Phone = user.Phone;
             _dbcontext.SaveChanges();
             return Ok();
         }

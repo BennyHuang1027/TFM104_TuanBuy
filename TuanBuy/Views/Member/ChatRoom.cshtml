@@ -1,7 +1,4 @@
-﻿@{ 
-    Layout = null;
-}
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -10,19 +7,15 @@
     <title>chat app - Bootdey.com</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="~/js/signalr/dist/browser/signalr.js"></script>
-    <link href="~/css/ChatRoom.css" rel="stylesheet" />
-    <link rel="stylesheet" href="~/css/bootstrap.min.css" />
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="~/js/vue.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link href="~/css/ChatRoom.css" rel="stylesheet" />
     <link href="~/css/site.css" rel="stylesheet" />
 </head>
 <body>
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
 
-    <div class="container" id="app">
+    <div class="container" id="app" style="margin-top:40px">
         <div class="row clearfix">
             <div class="col-lg-12">
                 <div class="card chat-app">
@@ -52,9 +45,9 @@
                             <li class="clearfix" v-on:click="getUserMessage(event)" :id="item.chatRoomId">
                                 <img :src="user.picPath" alt="avatar">
                                 <div class="about">
-                                <div class="name">{{user.nickName}}</div>
-                                @*vue判斷式判斷使用者目前是否在線中*@
-                                <div class="status" :id="user.id" v-if="user.status">
+                                    <div class="name">{{user.nickName}}</div>
+                                    @*vue判斷式判斷使用者目前是否在線中*@
+                                    <div class="status" :id="user.id" v-if="user.status">
                                         <i class="fa fa-circle online"></i>online
                                     </div>
                                     <div class="status" :id="user.id" v-else>
@@ -77,30 +70,36 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-6 hidden-sm text-right">
-                                    <a href="javascript:void(0);" class="btn btn-outline-secondary"><i class="fa fa-camera"></i></a>
-                                    <a href="javascript:void(0);" class="btn btn-outline-primary"><i class="fa fa-image"></i></a>
-                                    <a href="javascript:void(0);" class="btn btn-outline-info"><i class="fa fa-cogs"></i></a>
-                                    <a href="javascript:void(0);" class="btn btn-outline-warning"><i class="fa fa-question"></i></a>
+                                    <label class="btn btn-info">
+                                        <input id="upload_img" style="display:none;" type="file" multiple v-on:change="up">
+                                        <i class="fa fa-photo"></i> 發送圖片
+                                    </label>
                                 </div>
                             </div>
                         </div>
                         <div class="chat-history" id="history">
                             <ul class="m-b-0">
-                                <li class="clearfix" v-for="p in messages" v-if="p.myMessages!==null">
+                                <li class="clearfix" v-for="p in messages" v-if="p.myMessages!==null || p.myMessageImage!==null">
                                     <div class="message-data text-right">
-                                        <span class="message-data-time">{{p.createDate}}</span>
-                                        <img :src="p.PicPath" alt="avatar"><br />
                                         <span class="message-data text-right">{{p.mynickName}}</span>
+                                        <img :src="p.PicPath" alt="avatar"><br />
+                                        <span class="message-data-time">{{p.createDate}}</span>
                                     </div>
-                                    <div class="message other-message float-right">{{p.myMessages}}</div>
+                                    <div class="message other-message float-right">
+                                        <div>{{p.myMessages}}</div>
+                                        <img :src="p.myMessageImage" v-if="p.myMessageImage !==null" style="height:100px;width:100px ;">
+                                    </div>
                                 </li>
                                 <li class="clearfix" v-else>
                                     <div class="message-data text-left">
                                         <img :src="p.PicPath" alt="avatar">
-                                        <span class="message-data-time">{{p.createDate}}</span><br />
-                                        <span class="message-data text-left">{{p.nickName}}</span>
+                                        <span class="message-data text-left">{{p.nickName}}</span><br />
+                                        <span class="message-data-time">{{p.createDate}}</span>
                                     </div>
-                                    <div class="message my-message">{{p.friendMessage}}</div>
+                                    <div class="message my-message">
+                                        <div>{{p.friendMessage}}</div>
+                                        <img :src="p.friendMessageImage" v-if="p.friendMessageImage !==null" style="height:100px;width:100px ;">
+                                    </div>
                                 </li>
                             </ul>
                         </div>
@@ -109,9 +108,17 @@
                                 <div class="input-group-prepend" v-on:click="sendMessage">
                                     <span class="input-group-text"><i class="fa fa-send"></i></span>
                                 </div>
-                                <input type="text" id="msg" v-on:keyup.enter="sendMessage" class="form-control" placeholder="Enter text here...">
+                                <temlate v-if="preview!==null">
+                                    <img v-bind:src="preview" width="100" height="100" />
+                                </temlate>
+                                <input type="text" id="msg" v-on:keyup.enter="sendMessage" class="form-control" placeholder="Enter text here..." />
                             </div>
                         </div>
+
+                        @*<div style="width: 30%;margin-left: 3%;position: relative;height: auto">
+                            <img src="/MemberPicture/6378445022786806216cea7cb52cd19c5de6508aaada85628a.jpg" onclick="imgclick()" width="100%">
+                            <input id="file" type="file" name="file" class="file" value="" onchange="upload()" style="display: none">
+                        </div>*@
                     </div>
                 </div>
             </div>
@@ -136,6 +143,7 @@
     var userAccount = '';
     var userName = '';
     var userPicPath = '';
+    var userConnectionId = '';
     class User {
         chatRoomId;
         chatRoomTitle = '';
@@ -158,6 +166,8 @@
         friendMessage = '';
         createDate = '';
         PicPath = '';
+        myMessageImage = null;
+        friendMessageImage = null;
     }
     var app = new Vue({
         el: '#app',
@@ -170,8 +180,10 @@
             userAccount: '',
             friendAccount: '',
             nowChatRoomId: '',
-            chatMessageTitle: '',
-            chatMessagePicPath:'',
+            chatMessageTitle: '個人聊天室',
+            chatMessagePicPath: '',
+            preview: null,
+            messageimgahe:'',
         },
         created: function () {
             //將目前登入使用者連線Hub
@@ -179,13 +191,19 @@
                 type: "GET",
                 url: "/Member/GetOnlineMember",
                 success: function (response) {
-                    console.log(response);
                     userid = response.id;
                     userAccount = response.email;
                     userName = response.nickName;
-                    userPicPath = '/productpicture/'+response.picPath;
+                    userPicPath = '/MemberPicture/' + response.picPath;
+                    app.chatMessageTitle = userName + '個人聊天室';
+                    app.chatMessagePicPath = userPicPath;
                     connection.start().then(function () {
-                        console.log('start');
+                        //先取得當前使用者連線id
+                        connection.invoke('getConnectionId')
+                            .then(function (connectionId) {
+                                userConnectionId = connectionId; 
+                            }).catch(err => console.error(err.toString()));;
+
                         // 加入群組
                         connection.invoke("AddUserList", userName, userid, userAccount).catch(function (err) {
                             return console.error(err.toString());
@@ -207,7 +225,6 @@
                 type: "POST",
                 url: "/Member/getChatRoomUser",
                 success: function (response) {
-                    console.log(response);
                     for (var i = 0; i < response.length; i++) {
                         var cotactobject = new ContactPerson();
                         cotactobject.chatRoomId = response[i].chatRoomId;
@@ -217,7 +234,7 @@
                             userobject.chatRoomId = response[i].chatRoomId;
                             userobject.chatRoomTitle = response[i].chatRoomTitle;
                             userobject.nickName = response[i].users[s].nickName;
-                            userobject.picPath = '/productpicture/'+response[i].users[s].picPath;
+                            userobject.picPath = '/MemberPicture/'+response[i].users[s].picPath;
                             userobject.id = response[i].users[s].userId;
                             userobject.userAccount = response[i].users[s].userAccount;
                             userobject.status = false;
@@ -225,8 +242,6 @@
                         }
                         app.cotactpersons.push(cotactobject);
                     }
-                    console.log('清單')
-                    console.log(app.cotactpersons);
                 },
                 error: function (response) {
                     alert(response);
@@ -236,9 +251,38 @@
         methods: {
             sendMessage: function () {
                 console.log('觸發寄送按鈕');
-                console.log(app.nowChatRoomId);
                 var messagecontext = document.getElementById("msg").value;
-                if (messagecontext != '') {
+                //todo 使用者傳送訊息圖片
+                if (app.preview != null) {
+                    //如果使用者寄發圖片則發ajax請求新增在呼叫Hub方式
+                    var bodyFormData = new FormData();
+                    bodyFormData.append('nowChatRoomId', app.nowChatRoomId);
+                    bodyFormData.append('userid', userid);
+                    bodyFormData.append('message', messagecontext);
+                    bodyFormData.append('connectionId', userConnectionId)
+                    bodyFormData.append('picPath', messageimgahe);             
+                    axios({
+                        method: "post",
+                        url: "/Member/CreateChatMessage",
+                        data: bodyFormData,
+                        headers: { "Content-Type": "multipart/form-data" }
+                    }).then((resp) => {
+                        app.preview = null;
+                        var message = new Message();
+                        const date = new Date(Date.now());
+                        message.createDate = new Intl.DateTimeFormat('zh-TW', options).format(date)
+                        message.PicPath = userPicPath;
+                        message.myMessages = messagecontext;
+                        message.myMessageImage = resp.data;
+                        app.messages.push(message);
+                        //清除輸入框
+                        document.getElementById("msg").value = '';
+                        //觸發HUB接收事件
+                        connection.invoke("SendPrivateImageMessage", app.nowChatRoomId, userid, userName, userPicPath, messagecontext, userConnectionId, resp.data);
+                    })
+                }
+                //判斷使用者是否只有輸入文字 如果帶有圖片則使用上面寄發圖片及文字方法
+                if (messagecontext != '' && app.preview==null) {
                     connection.invoke("SendPrivateMessage", app.nowChatRoomId, userid, messagecontext);
                     var message = new Message();
                     const date = new Date(Date.now());
@@ -272,6 +316,8 @@
                     url: "/Member/GetChatMessage",
                     data: { chatRoomId: event.currentTarget.id },
                     success: function (response) {
+                        console.log('這是還未處理的聊天室訊息')
+                        console.log(response);
                         /*時間格式化*/
                         for (var i = 0; i < response.length; i++) {
                             app.message = new Message();
@@ -280,33 +326,46 @@
                             app.message.memberId = response[i].memberId;
                             
                             //將訊息進行分類處理
-                            if (response[i].myMessage !== null) {
+                            if (response[i].myMessage !== null || response[i].myMessageImage !==null) {
                                 app.message.friendMessage = null;
                                 app.message.myMessages = response[i].myMessage;
+                                app.message.myMessageImage = response[i].myMessageImage;
                             }
                             else {
                                 app.message.myMessages = null;
                                 app.message.friendMessage = response[i].friendMessage;
+                                app.message.friendMessageImage = response[i].friendMessageImage;
                             }
-                            app.message.PicPath = '/productpicture/'+response[i].picPath;
+                            app.message.PicPath = '/MemberPicture/'+response[i].picPath;
                             app.message.memberId = response[i].messageId;
                             app.message.nickName = response[i].nickName;
                             app.messages.push(app.message);
                         }
+                        console.log('這是取得聊天室訊息');
                         console.log(app.messages);
                     },
                     error: function (response) {
                         alert(response);
                     }
                 });
+            },
+
+            //上傳圖片方法
+            up: function (event) {
+                messageimgahe = event.target.files[0];
+                var input = event.target;
+                if (input.files) {
+                    var reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.preview = e.target.result;
+                    }
+                    this.image = input.files[0];
+                    reader.readAsDataURL(input.files[0]);
+                }
             }
         }
     })
 
-
-    connection.on('GetUserList', msg => {
-        console.log(msg);
-    })
 
     //第一次進入頁面查找好友是否在線
     connection.on('GetOnlineUserList', msg => {
@@ -314,7 +373,7 @@
             console.log('目前尚未有好友在線中')
         }
         else {
-            console.log('這個是使用者目前好友在線名單');
+/*            console.log('這個是使用者目前好友在線名單');*/
             //目前好友在線名單
             //將使用者在線房間id存成物件
             var useronlineobject = [];
@@ -334,29 +393,41 @@
         }
     })
 
-    /* TODO*/
+    /* 接收其他使用者傳來訊息*/
     connection.on('PrivateMsgRecevied', (message, currentUser, currentUserImg) => {
         var messagesobject = new Message();
         const date = new Date(Date.now());
         messagesobject.createDate = new Intl.DateTimeFormat('zh-TW', options).format(date)
         messagesobject.nickName = currentUser;
         messagesobject.friendMessage = message;
-        messagesobject.PicPath = '/productpicture/'+currentUserImg;
+        messagesobject.PicPath = '/MemberPicture/'+currentUserImg;
+        messagesobject.myMessages = null;
+        app.messages.push(messagesobject);
+    })
+
+    /* 接收其他使用者傳來的圖片訊息*/
+    connection.on('PrivateImgMsgRecevied', (messagecontext, userName, userPicPath, imgMsgPicPath) => {
+        console.log('接收到其他使用者傳來的圖片囉!');
+        var messagesobject = new Message();
+        const date = new Date(Date.now());
+        messagesobject.createDate = new Intl.DateTimeFormat('zh-TW', options).format(date)
+        messagesobject.nickName = userName;
+        messagesobject.friendMessage = messagecontext;
+        messagesobject.PicPath = userPicPath;
+        messagesobject.friendMessageImage = imgMsgPicPath;
         messagesobject.myMessages = null;
         app.messages.push(messagesobject);
     })
 
 
+
     ////監聽事件查看好友是否上線
     connection.on('SendOnlineUserList', msg => {
-        if (Object.keys(msg).length === 0) {
-            console.log('目前尚未有好友在線中')
-        }
-        else {
+        if (Object.keys(msg).length !== 0) {
             console.log('您的好友' + msg.name + '已上線囉!' + 'id為' + msg.id);
             /*TODO*/
             if (!!document.getElementById('' + msg.id)) {
-/*                app.cotactpersons.chatRoomId.find(x => x.chatRoomId == msg.id).status = true;*/
+                /*                app.cotactpersons.chatRoomId.find(x => x.chatRoomId == msg.id).status = true;*/
                 document.getElementById('' + msg.id).innerHTML = '<i class="fa fa-circle online"></i> online';
             }
         }

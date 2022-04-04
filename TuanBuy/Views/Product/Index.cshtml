@@ -1,6 +1,6 @@
 ﻿<div class="container" id="form1">
     <div class="row">
-        <partial name="_MyProductCenter"></partial>
+        <partial name="_MyProductCenter">
         <!-- 右邊內容 -->
         <div class="col-lg-10">
             <div>
@@ -25,7 +25,15 @@
                 <div class="display">
                     <p>類別</p>
                 </div>
-                <div class="display"><input type="text" id="Category" v-model="product.category"></div>
+                <div class="display">@*<input type="text" id="Category" v-model="product.category"></div>*@
+                <select v-model="product.category">
+                    <option  disabled selected value="商品種類" >商品種類</option>
+                    <option>乾糧</option>
+                    <option>票卷</option>
+                    <option>美食</option>
+                    <option>用品</option>
+                    <option>3C</option>
+                </select>
             </div>
             <div>
                 <div class="display">
@@ -49,14 +57,14 @@
 
             </div>
             <div>
-                <input type="file" class="form-control" id="PicPath" multiple="" v-on:change="up">
+                <input type="file" class="form-control" id="PicPath" multiple v-on:change="up">
             </div>
             <div><button v-on:click="addProduct">刊登</button></div>
         </div>
         <!-- 右邊內容 -->
     </div>
+ </div>
 </div>
-
 
 
 <script>
@@ -69,7 +77,7 @@
                 description:"描述",
                 content:"內容",
                 picPath:null,
-                category:"類別",
+                category:"商品種類",
                 endTime:null
             },
             preview:null

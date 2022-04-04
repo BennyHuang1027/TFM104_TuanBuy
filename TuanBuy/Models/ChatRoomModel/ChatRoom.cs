@@ -8,7 +8,6 @@ using TuanBuy.Models.Entities;
 
 namespace TuanBuy.Models
 {
-    [TableAttribute(name: "ChatRoom")]
     public class ChatRoom
     {
         [Key]

@@ -3,12 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TuanBuy.Migrations
 {
-    public partial class _0331123 : Migration
+    public partial class _0404 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ChatRoom",
+                name: "ChatRooms",
                 columns: table => new
                 {
                     ChatRoomId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -16,7 +16,7 @@ namespace TuanBuy.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ChatRoom", x => x.ChatRoomId);
+                    table.PrimaryKey("PK_ChatRooms", x => x.ChatRoomId);
                 });
 
             migrationBuilder.CreateTable(
@@ -48,7 +48,7 @@ namespace TuanBuy.Migrations
                     Birth = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     BankAccount = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    State = table.Column<int>(type: "int", nullable: false),
+                    State = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Sex = table.Column<int>(type: "int", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PicPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -69,42 +69,17 @@ namespace TuanBuy.Migrations
                     ChatRoomId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     MemberId = table.Column<int>(type: "int", nullable: false),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MessageImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ChatMessages", x => x.MessageId);
                     table.ForeignKey(
-                        name: "FK_ChatMessages_ChatRoom_ChatRoomId",
+                        name: "FK_ChatMessages_ChatRooms_ChatRoomId",
                         column: x => x.ChatRoomId,
-                        principalTable: "ChatRoom",
+                        principalTable: "ChatRooms",
                         principalColumn: "ChatRoomId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ChatRoomMember",
-                columns: table => new
-                {
-                    MemberId = table.Column<int>(type: "int", nullable: false),
-                    ChatRoomId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ChatRoomMember", x => new { x.MemberId, x.ChatRoomId });
-                    table.ForeignKey(
-                        name: "FK_ChatRoomMember_ChatRoom_ChatRoomId",
-                        column: x => x.ChatRoomId,
-                        principalTable: "ChatRoom",
-                        principalColumn: "ChatRoomId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ChatRoomMember_User_MemberId",
-                        column: x => x.MemberId,
-                        principalTable: "User",
-                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -119,13 +94,39 @@ namespace TuanBuy.Migrations
                 {
                     table.PrimaryKey("PK_ChatRoomUser", x => new { x.ChatRoomId, x.MemberId });
                     table.ForeignKey(
-                        name: "FK_ChatRoomUser_ChatRoom_ChatRoomId",
+                        name: "FK_ChatRoomUser_ChatRooms_ChatRoomId",
                         column: x => x.ChatRoomId,
-                        principalTable: "ChatRoom",
+                        principalTable: "ChatRooms",
                         principalColumn: "ChatRoomId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ChatRoomUser_User_MemberId",
+                        column: x => x.MemberId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Member_Chats",
+                columns: table => new
+                {
+                    MemberId = table.Column<int>(type: "int", nullable: false),
+                    ChatRoomId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Member_Chats", x => new { x.MemberId, x.ChatRoomId });
+                    table.ForeignKey(
+                        name: "FK_Member_Chats_ChatRooms_ChatRoomId",
+                        column: x => x.ChatRoomId,
+                        principalTable: "ChatRooms",
+                        principalColumn: "ChatRoomId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Member_Chats_User_MemberId",
                         column: x => x.MemberId,
                         principalTable: "User",
                         principalColumn: "Id",
@@ -147,7 +148,7 @@ namespace TuanBuy.Migrations
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Category = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Disable = table.Column<bool>(type: "bit", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: true)
+                    UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -157,7 +158,7 @@ namespace TuanBuy.Migrations
                         column: x => x.UserId,
                         principalTable: "User",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -187,6 +188,47 @@ namespace TuanBuy.Migrations
                         principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductMessages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductMessages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductMessages_Product_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Product",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductPics",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PicPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProductId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductPics", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductPics_Product_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Product",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -227,20 +269,19 @@ namespace TuanBuy.Migrations
                 column: "ChatRoomId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChatRoomMember_ChatRoomId",
-                table: "ChatRoomMember",
-                column: "ChatRoomId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ChatRoomUser_MemberId",
                 table: "ChatRoomUser",
                 column: "MemberId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Member_Chats_ChatRoomId",
+                table: "Member_Chats",
+                column: "ChatRoomId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Order_ProductId",
                 table: "Order",
-                column: "ProductId",
-                unique: true);
+                column: "ProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Order_UserId",
@@ -261,6 +302,16 @@ namespace TuanBuy.Migrations
                 name: "IX_Product_UserId",
                 table: "Product",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductMessages_ProductId",
+                table: "ProductMessages",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductPics_ProductId",
+                table: "ProductPics",
+                column: "ProductId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -269,19 +320,25 @@ namespace TuanBuy.Migrations
                 name: "ChatMessages");
 
             migrationBuilder.DropTable(
-                name: "ChatRoomMember");
+                name: "ChatRoomUser");
 
             migrationBuilder.DropTable(
-                name: "ChatRoomUser");
+                name: "Member_Chats");
 
             migrationBuilder.DropTable(
                 name: "OrderDetail");
 
             migrationBuilder.DropTable(
+                name: "ProductMessages");
+
+            migrationBuilder.DropTable(
+                name: "ProductPics");
+
+            migrationBuilder.DropTable(
                 name: "TestProducts");
 
             migrationBuilder.DropTable(
-                name: "ChatRoom");
+                name: "ChatRooms");
 
             migrationBuilder.DropTable(
                 name: "Order");

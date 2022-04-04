@@ -19,6 +19,10 @@ namespace TuanBuy.Models.Entities
         public virtual DbSet<OrderDetail> OrderDetail { get; set; }
         public virtual DbSet<Product> Product { get; set; }
         public virtual DbSet<User> User { get; set; }
+
+        public virtual DbSet<ProductMessage> ProductMessages { get; set; }
+
+        public virtual DbSet<ProductPic> ProductPics { get; set; }
         public virtual DbSet<TestProduct> TestProducts { get; set; }
 
         public virtual DbSet<ChatRoom> ChatRooms { get; set; }

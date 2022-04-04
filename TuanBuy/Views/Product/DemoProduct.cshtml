@@ -1,7 +1,7 @@
-﻿<!--倉俊寫的-->
+﻿<!--倉俊寫的 後端志輝-->
 <link rel="stylesheet" href="~/css/image.css" type="text/css">
 
-<div class="container" id="mypd">
+<div class="container" id="app">
     <div class="row">
         <div class="col-lg-8">
             <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
@@ -11,53 +11,54 @@
                     <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
                 </ol>
                 <!--商品圖片-->
-                <div class="carousel-inner">
-                    <div class="carousel-item active">
-                        <img class="Photo" v-bind:src="products.picPath" alt="First slide">
+                <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                    <ol class="carousel-indicators">
+                        <li data-target="#carouselExampleIndicators" :data-slide-to="index" v-for="(item,index) in productData.productPicPath" v-if="index >= 1"></li>
+                        <li data-target="#carouselExampleIndicators" :data-slide-to="index" class="active" v-else></li>
+                    </ol>
+                    <div class="carousel-inner">
+                        <div class="carousel-item" v-for="(item,index) in productData.productPicPath" v-if="index >= 1">
+                            <img class="d-block w-100" :src="item" style="height:400px;width:250px;" alt="First slide">
+                        </div>
+                        <div class="carousel-item active" v-else>
+                            <img class="d-block w-100" :src="item" style="height:400px;width:250px;" alt="First slide">
+                        </div>
                     </div>
-                    <div class="carousel-item">
-                        <img class="Photo" v-bind:src="products.picPath" alt="Second slide">
-                    </div>
-                    <div class="carousel-item">
-                        <img class="Photo" v-bind:src="products.picPath" alt="Third slide">
-                    </div>
+                    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
                 </div>
-                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
-                </a>
-                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
-                </a>
             </div>
         </div>
 
         <div class="col-lg-4">
-            
+
             <!--分類-->
             <div class="take">
-                台灣
+                產品種類
                 <div class="lable">\</div>
-                <a href="">設計</a>
-                <div class="lable">\</div>
-                <a href="">露營</a>
+                <a href="">{{productData.productCategory}}</a>
             </div>
             <div class="Productname">
                 <a class="descriptionblock" href="">
                     <!--商品名稱-->
-                    <h2 class="description">{{products.name}}</h2>
+                    <h2 class="description">{{productData.productTitle}}</h2>
                 </a>
                 <div class="concern">
                     <span class="master">團主</span>
-                    <a class="personname" href="">Harry Wang</a>
+                    <a class="personname" href="">{{productData.seller}}</a>
                     <a href="">聊聊+</a>
                     <a href="">商場</a>
                 </div>
                 <!--商品內容-->
-                <p >{{products.content}}</p>
+                <p>{{productData.productDescription}}</p>
                 <div class="price">
-                    <div class="price">NT$100,000</div>
+                    <div class="price">目標金額NT${{productData.productTargetPrice}}</div>
                     <div class="progress">
                         <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25"
                              aria-valuemin="0" aria-valuemax="100">25%</div>
@@ -66,16 +67,16 @@
                         <div class="nav nav-list"></div>
                     </div>
                     <div class="purchase">
-                        <span>團購人數</span>
-                        <span>92</span>
+                        <span>參與團購人數</span>
+                        <span>{{productData.buyers}}</span>
                     </div>
                     <div class="purchase">
                         <span>剩餘時間</span>
-                        <span>44天</span>
+                        <span>{{productData.productLastTime}}</span>
                     </div>
                     <div class="purchase">
                         <span>時程</span>
-                        <span>2022/03/12~2022/03/19</span>
+                        <span>{{productData.productStartTime}}~{{productData.productEndTime}}</span>
                     </div>
                     <div class="Buy">
                         <span class="stepper">
@@ -97,7 +98,7 @@
                         <a class="nav-link active" id="spec-tab" data-toggle="tab" href="#spec" role="tab"
                            aria-controls="spec" aria-selected="true">產品規格</a>
                     </li>
-                    <li class="nav-item" role="presentation">
+                    <li class="nav-item" role="presentation" v-on:click="getMessage">
                         <a class="nav-link" id="message-tab" data-toggle="tab" href="#message" role="tab"
                            aria-controls="message" aria-selected="false">留言</a>
                     </li>
@@ -107,14 +108,12 @@
                         <div class="row">
                             <div class="col-8">
                                 <div>
-                                    <span>💥僅上線 1 天，團購達標 1,000,000 里程碑 🎉 千萬別忘了！贊助者限定的贈禮活動！</span>
-
                                 </div>
                                 <div>
                                     <tr>
                                         <td>
                                             <h2>
-                                                當全球疫情趨緩，各地陸續解封開放的同時， 陪你整天四處在外奔走的柴爐，是不是也必須跟你一起
+                                                {{productData.productDescription}}
                                                 <img src="" alt="">
                                             </h2>
                                             <div class="item">
@@ -128,8 +127,7 @@
                                                 <h6></h6>
                                                 <img src="" alt="">
                                                 <h6 class="productfont">
-                                                    一長夾移動柴塊，小而巧的空間讓你更聚精會神灌注在「火神」身上。在露營盡情玩火、觀火也不需大費周章。用一台「PILMOA
-                                                    迷你露營燒柴爐」就可以搞定你的超火露營魂 .ᐟ
+                                                    {{productData.productSummary}}
                                                 </h6>
                                             </div>
                                             <div class="item">
@@ -142,34 +140,6 @@
                                                     .ᐟ
                                                     是貨真價實的好「火」伴 .ᐟ
                                                 </h6>
-                                            </div>
-                                            <div class="item">
-                                                <img src="" alt="">
-                                            </div>
-                                            <div class="item">
-                                                <img src="" alt="">
-                                                <p class="productfont">
-                                                    《消費者使用耳機通話時，最常經常遇到的問題》#
-                                                    『音量太小，對方聽不清楚談話內容』
-                                                    『環境太吵，臨時找不到安靜的地方』
-                                                    『環境噪音大過於講話音量，對方聽得很吃
-                                                </p>
-                                            </div>
-                                            <div class="item">
-                                                <img src="" alt="">
-                                            </div>
-                                            <div class="text">
-
-                                                <b>【產品引言】</b>
-                                                <br>
-                                                <span>
-                                                    經過調查發現，真正的耳機發燒友，絕大部分的人都是使用有線耳機，因為有線耳機都是透過金屬線
-                                                    (比如銅線、銀線、銅包銀等)做為媒介進行傳輸，受到外來的干擾會比較少，除了細節表現更加細膩外，總體的音質會更加飽滿扎實。
-                                                </span>
-                                                <span>
-                                                    不論是音樂發燒友或是追求潮流的年輕世代，對於高階全罩式、輕便的耳塞式、耳機顏色、材質、甚至是品牌，每個人都有屬於自己的偏好，我們期許讓使用者擁有屬於自己的品味耳機的同時，希望能透過這款智慧神器，將音樂帶給你的感動提升至另一層次，不論是對於極致工藝的追求、淬煉設計的偏執、直覺性的使用經驗以及完美的音質表現，這些都是我們想透過這個產品傳達給消費者感受，希望你會喜歡！
-                                                </span>
-
                                             </div>
                                         </td>
                                     </tr>
@@ -273,95 +243,113 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="message" role="tabpanel" aria-labelledby="message-tab">
-
-                        <!--對話內容留言板-->
+                        <form>
+                            <input required='' type='text'>
+                            <label alt='留下你的評論吧!' placeholder='按下Enter送出'></label>
+                        </form>
+                        <!-- Featured on LittleBigDetails -->
                         <div class="container">
-                            <div class="headpic">
-                                <div class="headpic1">
-                                    <img class="imge" src="" alt="">
-                                    <a class="" href="">王曉明</a>
+                            <!--對話內容留言板-->
+                            <div class="container">
+                                <div class="headpic">
+                                    <div class="headpic1">
+                                        <img class="imge" src="https://i.picsum.photos/id/892/50/50.jpg?hmac=UFi_MC3DKG4PnEpIR60EdCg4AHzs_jnNxQ8uxamK7Co" alt="">
+                                        <a class="name" href="">王曉明</a>
+                                    </div>
+                                    <div class="speak1">
+                                        <p>這個可以吃嗎?</p>
+                                    </div>
                                 </div>
-                                <div class="speak1">
-                                    <p>這個可以吃嗎?</p>
+                                @*團主回覆可日後實作*@
+                                <div class="speak">
+                                    <div>
+                                        <a href="">Harry Wang</a>
+                                        <span>團主</span>
+                                    </div>
+                                    <div>
+                                        <p>您好，是可以使用的唷。相關大小也建議參酌頁面建議，也提醒火伴，無論是使用哪種燒柴爐/焚火台，要用木炭的話，可選有中空型的</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="speak">
-                                <div>
-                                    <a href="">Harry Wang</a>
-                                    <span>團主</span>
-                                </div>
-                                <div>
-                                    <p>您好，是可以使用的唷。相關大小也建議參酌頁面建議，也提醒火伴，無論是使用哪種燒柴爐/焚火台，要用木炭的話，可選有中空型的</p>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="headpic">
-                                <div class="headpic1">
-                                    <img class="imge" src="" alt="">
-                                    <a href="">王曉明</a>
-                                </div>
-                                <div class="speak1">
-                                    <p>這個可以吃嗎?</p>
-                                </div>
-                            </div>
-                            <div class="speak">
-                                <div>
-                                    <a href="">Harry Wang</a>
-                                    <span>團主</span>
-                                </div>
-                                <div>
-                                    <p>您好，是可以使用的唷。相關大小也建議參酌頁面建議，也提醒火伴，無論是使用哪種燒柴爐/焚火台，要用木炭的話，可選有中空型的</p>
+                                <div class="headpic">
+                                    <div class="headpic1">
+                                        <img class="imge" src="https://i.picsum.photos/id/892/50/50.jpg?hmac=UFi_MC3DKG4PnEpIR60EdCg4AHzs_jnNxQ8uxamK7Co" alt="">
+                                        <a class="name" href="">王曉明</a>
+                                    </div>
+                                    <div class="speak1">
+                                        <p>這個可以吃嗎?</p>
+                                    </div>
                                 </div>
                             </div>
-                            <hr>
-                            <div class="headpic">
-                                <div class="headpic1">
-                                    <img class="imge" src="f" alt="">
-                                    <a href="">王曉明</a>
-                                </div>
-                                <div class="speak1">
-                                    <p>這個可以吃嗎?</p>
-                                </div>
-                            </div>
-                            <div class="speak">
-                                <div>
-                                    <a href="">Harry Wang</a>
-                                    <span>團主</span>
-                                </div>
-                                <div>
-                                    <p>您好，是可以使用的唷。相關大小也建議參酌頁面建議，也提醒火伴，無論是使用哪種燒柴爐/焚火台，要用木炭的話，可選有中空型的</p>
-                                </div>
-                            </div>
-                            <hr />
+
                         </div>
-
                     </div>
-                </div>
 
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-
 <script>
-    let str = window.location.pathname.split("/");
-    console.log(str);
-    let id = str[str.length-1] ;
-    console.log(id);
-    var app = new Vue({
-        el: "#mypd",
-        data: {
-            products: []
-        },
-        methods: {},
-        mounted: function () {
-            let self = this;
-            axios.get("/api/Products/" + id).then((resp) => {
-                self.products = resp.data;
-            });
+    const options = {
+        year: 'numeric',    // 年: 使用4位數
+        month: '2-digit',   // 月: 使用2數位
+        day: '2-digit',     // 日: 使用2數位
+        hour12: false,      // 12小時制: 不使用
+    };
+        //抓取Url資訊
+        let str = window.location.pathname.split("/");
+        /*抓取Url id*/
+        let prdid = str[str.length - 1];
+        class ProductData {
+            productId = 0;
+            buyers = 0;
+            productCategory = '';
+            productDescription = '';
+            productEndTime = '';
+            productLastTime = '';
+            productStartTime = '';
+            productSummary = '';
+            productTargetPrice = 0;
+            productTitle = '';
+            productPicPath = [];
+            seller = '';
+            sellerId = 0;
         }
-    });
+        var app = new Vue({
+            el: "#app",
+            data: {
+                productData: new ProductData(),
+            },
+            methods: {
+                getMessage: function () {
+                    console.log('點擊取得留言');
+                }
+            },
+            mounted: function () {
+                axios.get("/Product/GetProductData/" + prdid).then((resp) => {
+                    this.productData.productId = resp.data.id;
+                    if (resp.data.buyers !== null) { this.productData.buyers = resp.data.buyers;}
+                    this.productData.productCategory = resp.data.productCategory;
+                    this.productData.productDescription = resp.data.productDescription;
+                    this.productData.productId = resp.data.id;
+                    this.productData.productStartTime = new Intl.DateTimeFormat('zh-TW', options).format(new Date(resp.data.productStartTime));
+                    this.productData.productEndTime = new Intl.DateTimeFormat('zh-TW', options).format(new Date(resp.data.productEndTime));
+                    this.productData.productLastTime = resp.data.productLastTime;
+                    this.productData.productSummary = resp.data.productSummary;
+                    this.productData.productTargetPrice = resp.data.productTargetPrice;
+                    this.productData.productTitle = resp.data.productTitle;
+                    this.productData.seller = resp.data.seller;
+                    this.productData.sellerId = resp.data.sellerId;
+                    for (var item in resp.data.productPicPath) {
+                        this.productData.productPicPath.push(resp.data.productPicPath[item]);
+                    }
+                    const date = new Date(response[i].createDate);
+                    app.message.createDate = new Intl.DateTimeFormat('zh-TW', options).format(date)
+                });
+                console.log(this.productData);
+            }
+        });
 
 </script>
 
@@ -388,6 +376,7 @@
                 "stepperInput('" + id + "', " + step + ", " + max + ")"
             );
     }
+    //團購按鈕
     function stepperInput(id, s, m) {
         var el = document.getElementById(id);
         if (s > 0) {

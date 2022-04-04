@@ -10,8 +10,8 @@ using TuanBuy.Models.Entities;
 namespace TuanBuy.Migrations
 {
     [DbContext(typeof(TuanBuyContext))]
-    [Migration("20220331015340_0331123")]
-    partial class _0331123
+    [Migration("20220403174628_0404")]
+    partial class _0404
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -55,6 +55,9 @@ namespace TuanBuy.Migrations
                     b.Property<string>("Message")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("MessageImage")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("MessageId");
 
                     b.HasIndex("ChatRoomId");
@@ -73,7 +76,7 @@ namespace TuanBuy.Migrations
 
                     b.HasKey("ChatRoomId");
 
-                    b.ToTable("ChatRoom");
+                    b.ToTable("ChatRooms");
                 });
 
             modelBuilder.Entity("TuanBuy.Models.ChatRoomMember", b =>
@@ -93,7 +96,7 @@ namespace TuanBuy.Migrations
 
                     b.HasIndex("ChatRoomId");
 
-                    b.ToTable("ChatRoomMember");
+                    b.ToTable("Member_Chats");
                 });
 
             modelBuilder.Entity("TuanBuy.Models.Entities.Order", b =>
@@ -120,8 +123,7 @@ namespace TuanBuy.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId")
-                        .IsUnique();
+                    b.HasIndex("ProductId");
 
                     b.HasIndex("UserId");
 
@@ -205,7 +207,7 @@ namespace TuanBuy.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -213,6 +215,49 @@ namespace TuanBuy.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Product");
+                });
+
+            modelBuilder.Entity("TuanBuy.Models.Entities.ProductMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductMessages");
+                });
+
+            modelBuilder.Entity("TuanBuy.Models.Entities.ProductPic", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("PicPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductPics");
                 });
 
             modelBuilder.Entity("TuanBuy.Models.Entities.TestProduct", b =>
@@ -284,8 +329,8 @@ namespace TuanBuy.Migrations
                     b.Property<int>("Sex")
                         .HasColumnType("int");
 
-                    b.Property<int>("State")
-                        .HasColumnType("int");
+                    b.Property<string>("State")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -340,8 +385,8 @@ namespace TuanBuy.Migrations
             modelBuilder.Entity("TuanBuy.Models.Entities.Order", b =>
                 {
                     b.HasOne("TuanBuy.Models.Entities.Product", "Product")
-                        .WithOne("Order")
-                        .HasForeignKey("TuanBuy.Models.Entities.Order", "ProductId")
+                        .WithMany("Order")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -373,14 +418,40 @@ namespace TuanBuy.Migrations
                 {
                     b.HasOne("TuanBuy.Models.Entities.User", "User")
                         .WithMany("Product")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TuanBuy.Models.Entities.ProductMessage", b =>
+                {
+                    b.HasOne("TuanBuy.Models.Entities.Product", "Product")
+                        .WithMany("ProductMessage")
+                        .HasForeignKey("ProductId");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("TuanBuy.Models.Entities.ProductPic", b =>
+                {
+                    b.HasOne("TuanBuy.Models.Entities.Product", "Product")
+                        .WithMany("ProductPics")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("TuanBuy.Models.Entities.Product", b =>
                 {
                     b.Navigation("Order");
+
+                    b.Navigation("ProductMessage");
+
+                    b.Navigation("ProductPics");
                 });
 
             modelBuilder.Entity("TuanBuy.Models.Entities.User", b =>

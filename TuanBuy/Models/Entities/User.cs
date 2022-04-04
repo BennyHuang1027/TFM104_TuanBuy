@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TuanBuy.ViewModel;
 
 #nullable disable
 
@@ -24,7 +25,7 @@ namespace TuanBuy.Models.Entities
         public DateTime? Birth { get; set; }
         public string Phone { get; set; }
         public string BankAccount { get; set; }
-        public int State { get; set; } = 0;
+        public string State { get; set; } = UserState.未驗證.ToString();
         public int Sex { get; set; } = 1;
         public string Address { get; set; }
         public string PicPath { get; set; } = "637843188933582087init.jpg";

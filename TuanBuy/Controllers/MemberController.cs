@@ -1,13 +1,16 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Topic.Hubs;
 using TuanBuy.Models;
 using TuanBuy.Models.Entities;
 using TuanBuy.ViewModel;
@@ -17,12 +20,14 @@ namespace TuanBuy.Controllers
     public class MemberController : Controller
     {
         //自訂建構子 同時注入一個組態物件
+        private readonly IWebHostEnvironment _environment;
         private IConfiguration _config;
-        private SqlDbServices _sqldb;
-        public MemberController(IConfiguration configuration, SqlDbServices sqlDbServices)
+        private TuanBuyContext _sqldb;
+        public MemberController(IConfiguration configuration, TuanBuyContext sqlDbServices, IWebHostEnvironment environment)
         {
             _config = configuration;
             _sqldb = sqlDbServices;
+            _environment = environment;
         }
         public IActionResult Index()
         {
@@ -101,6 +106,37 @@ namespace TuanBuy.Controllers
             return null;
         }
 
+        #endregion
+
+        #region 新增聊天室圖片訊息 並且呼叫Hub回傳給使用者
+        [HttpPost]
+        public async Task<string> CreateChatMessage([FromForm] string nowChatRoomId, int userid, string message,string connectionId, IFormFile picPath)
+        {
+            var fileName = "";
+            if (picPath != null)
+            {
+                var path = _environment.WebRootPath + "/MessagePicture";
+                var pic = picPath;
+                fileName = DateTime.Now.Ticks + pic.FileName;
+                using var fs = System.IO.File.Create($"{path}/{fileName}");
+                await pic.CopyToAsync(fs);
+                //ChatHub chatHub = new ChatHub();
+                //await chatHub.SendChatImage(nowChatRoomId, userid,message, "{path}/{fileName}");
+                using (_sqldb)
+                {
+                    ChatMessages messages = new ChatMessages();
+                    messages.ChatRoomId = Guid.Parse(nowChatRoomId);
+                    messages.MemberId = userid;
+                    messages.Message = message;
+                    messages.CreateDate = DateTime.Now;
+                    messages.MessageImage = $"/MessagePicture/{fileName}";
+                    _sqldb.ChatMessages.Add(messages);
+                    _sqldb.SaveChanges();
+                }
+                return $"/MessagePicture/{fileName}";
+            }
+            return "新增圖片失敗";
+        }
         #endregion
     }
 }
